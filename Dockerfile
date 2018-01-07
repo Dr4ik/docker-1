@@ -1,14 +1,16 @@
 FROM alpine
 
-RUN echo 'syncthing:x:1000:1000::/var/syncthing:/sbin/nologin' >> /etc/passwd \
-    && echo 'syncthing:!::0:::::' >> /etc/shadow \
+ENV release= \
+    UID=1000 \
+    GID=1000
+    
+RUN addgroup -g ${GID} syncthing \
+    && adduser -D -u ${UID} -G syncthing syncthing \
     && mkdir /var/syncthing \
     && chown syncthing /var/syncthing
 
 RUN apk add --no-cache curl jq gnupg ca-certificates \
     && gpg --keyserver keyserver.ubuntu.com --recv-key D26E6ED000654A3E
-
-ENV release=
 
 RUN set -x \
     && mkdir /syncthing \
